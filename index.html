@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PKYI - Liturgi Digital</title>
+
+    <link rel="manifest" href='data:application/manifest+json,
+    {
+      "name": "PKYI Liturgi Digital",
+      "short_name": "PKYI",
+      "description": "Persekutuan Keluarga Yesus Indonesia",
+      "start_url": ".",
+      "display": "standalone",
+      "background_color": "#0d0d0d",
+      "theme_color": "#ffd700",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/192/ffd700/000000?text=PKYI",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "https://via.placeholder.com/512/ffd700/000000?text=PKYI",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }'>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✝️</text></svg>">
+
+    <style>
+        /* TAMPILAN WARNA EMAS & HITAM */
+        .running-text {
+            background: #ffd700;
+            color: #000;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0d0d0d; 
+            color: white; 
+            text-align: center; 
+            padding: 80px 20px 20px 20px;
+        }
+
+        .container { 
+            background: #1a1a1a; 
+            border: 4px solid #ffd700; 
+            border-radius: 20px; 
+            padding: 30px; 
+            max-width: 500px; 
+            margin: auto; 
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); 
+        }
+
+        h1 { color: #ffd700; margin-bottom: 5px; font-size: 20px; }
+        .info-box { background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px solid #333; }
+        
+        .btn { 
+            padding: 18px; 
+            text-decoration: none; 
+            color: white; 
+            font-weight: bold; 
+            border-radius: 10px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px; 
+            transition: 0.4s;
+            font-size: 16px;
+            gap: 10px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .btn-admin { background: #d35400; border-bottom: 4px solid #a04000; }
+        
+        #jemaat-btn { 
+            background: #5e3c25; 
+            border-bottom: 4px solid #3e2719;
+            cursor: not-allowed; 
+            pointer-events: none; 
+            color: #888; 
+        }
+        
+        .btn-aktif { 
+            background: #27ae60 !important; 
+            border-bottom: 4px solid #1e8449 !important;
+            cursor: pointer !important; 
+            pointer-events: auto !important; 
+            color: #fff !important;
+        }
+        
+        /* POPUP PASSWORD */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .popup-content {
+            background: #1a1a1a;
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 300px;
+            text-align: center;
+        }
+        
+        .popup-content input {
+            width: 90%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #000;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .footer { font-size: 11px; color: #555; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="running-text">
+    <marquee id="marquee-text" scrollamount="8">
+        Selamat Datang di PKYI - Open Gate Jam 18.00 WIB - Siapkan Alkitab & Hati
+    </marquee>
+</div>
+
+<div class="container">
+    <h1>PERSEKUTUAN KELUARGA YESUS INDONESIA</h1>
+    <p style="font-size: 14px; color: #aaa;">Yogyakarta</p>
+
+    <div class="info-box">
+        <div id="tgl-text" style="font-weight: bold; color: #ffd700;"></div>
+        <div id="nama-liturgi" style="margin-top: 10px; font-size: 18px; color: #00ff00;">Memeriksa Liturgi...</div>
+        <div id="jam-text" style="font-size: 14px; margin-top: 5px; color: #888;"></div>
+    </div>
+
+    <div class="btn-box">
+        <button id="admin-btn" class="btn btn-admin" onclick="bukaPopupAdmin()">🚀 MULAI PUSH VIDEO (ADMIN)</button>
+        <a href="#" id="jemaat-btn" class="btn" target="_blank">
+            <span style="font-size:20px;">✝️</span> <span id="btn-text">TAB VIEW JEMAAT (TERKUNCI)</span>
+        </a>
+    </div>
+
+    <div class="footer"><br>
+        Otomatis Terbuka: Jam 18:00 s/d 18:30 WIB
+    </div>
+</div>
+
+<div id="password-popup" class="popup">
+    <div class="popup-content">
+        <h3 style="color:#ffd700;">🔐 ADMIN ACCESS</h3>
+        <input type="password" id="admin-password" placeholder="PIN 4 Digit" maxlength="4">
+        <div>
+            <button class="btn" style="background:#27ae60; margin-bottom:5px;" onclick="verifikasiPassword()">MASUK</button>
+            <button class="btn" style="background:#666;" onclick="tutupPopup()">BATAL</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // KONFIGURASI
+    const VDO_NINJA_ID = "g7Ge9t7"; 
+    const ADMIN_PASSWORD = "1234";
+
+    // MENGAKTIFKAN SERVICE WORKER (SATUPAM PWA)
+    if ('serviceWorker' in navigator) {
+        const swCode = "self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));";
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl);
+    }
+
+    function bukaPopupAdmin() {
+        document.getElementById('password-popup').style.display = 'flex';
+        document.getElementById('admin-password').value = '';
+    }
+
+    function tutupPopup() {
+        document.getElementById('password-popup').style.display = 'none';
+    }
+
+    function verifikasiPassword() {
+        if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+            window.open('https://vdo.ninja/?push=' + VDO_NINJA_ID, '_blank');
+            tutupPopup();
+        } else {
+            alert('❌ Password salah!');
+        }
+    }
+
+    function updateSistem() {
+        const sekarang = new Date();
+        const tgl = sekarang.getDate();
+        const bln = sekarang.getMonth() + 1;
+        const hariKe = sekarang.getDay(); 
+        const jam = sekarang.getHours();
+        const menit = sekarang.getMinutes();
+
+        const opsi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('tgl-text').innerText = sekarang.toLocaleDateString('id-ID', opsi);
+        document.getElementById('jam-text').innerText = "Waktu: " + sekarang.toLocaleTimeString('id-ID');
+
+        const btn = document.getElementById('jemaat-btn');
+        const btnText = document.getElementById('btn-text');
+        const status = document.getElementById('nama-liturgi');
+        const marquee = document.getElementById('marquee-text');
+
+        const jadwalLiturgi = { "13-3": "HUT DIY", "29-3": "Minggu Palma", "5-4": "Paskah" };
+        const key = tgl + "-" + bln;
+        const perayaan = jadwalLiturgi[key];
+
+        const isHariBenar = (hariKe === 0 || perayaan);
+        const isJamBuka = (jam === 18 && menit >= 0 && menit < 30);
+
+        if (isHariBenar) {
+            btn.href = 'https://vdo.ninja/?view=' + VDO_NINJA_ID;
+            if (isJamBuka) {
+                btn.classList.add('btn-aktif');
+                btnText.innerText = "TAB VIEW JEMAAT (OPEN)";
+                status.innerText = perayaan ? "OPEN GATE: " + perayaan : "OPEN GATE: IBADAH MINGGU";
+                status.style.color = "#00ff00";
+            } else {
+                btn.classList.remove('btn-aktif');
+                btnText.innerText = "TUNGGU JAM 18:00";
+                status.innerText = perayaan ? "PERSIAPAN: " + perayaan : "PERSIAPAN IBADAH";
+                status.style.color = "#ffd700";
+            }
+        } else {
+            btn.classList.remove('btn-aktif');
+            status.innerText = "Tidak Ada Jadwal Ibadah Hari Ini";
+            status.style.color = "#888";
+        }
+    }
+
+    setInterval(updateSistem, 1000);
+    updateSistem();
+</script>
+</body>
+</html>
